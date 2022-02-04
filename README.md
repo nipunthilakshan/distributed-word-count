@@ -51,32 +51,47 @@ happily 1
 ```
 
 Now lets's check how we can do this using Hadoop in a efficient way.
-* Upload the input and jobs files to EMR master node.
+* Upload the input and jobs files to EMR master node(SFTP/WinScp/FileZilla can be used).
 * Make a directory in HDFS and add the test data there.
 ```bash
-hdfs dfs -mkdir /user/nipun/mapReduce/input
-hdfs dfs -put 4300-0.txt 5000-8.txt pg20417.txt /user/nipun/mapReduce/input
+$ hdfs dfs -mkdir /user/nipun/mapReduce/input
+$ hdfs dfs -put 4300-0.txt 5000-8.txt pg20417.txt /user/nipun/mapReduce/input
+$ hdfs dfs -ls /user/nipun/mapReduce/input
+-rw-r--r--   1 hadoop hdfsadmingroup    1586336 2022-02-04 15:32 /user/nipun/mapReduce/input/4300-0.txt
+-rw-r--r--   1 hadoop hdfsadmingroup    1428843 2022-02-04 15:32 /user/nipun/mapReduce/input/5000-8.txt
+-rw-r--r--   1 hadoop hdfsadmingroup     674570 2022-02-04 15:13 /user/nipun/mapReduce/input/pg20417.txt
 ```
 
 * Change the file permissions for jobs files.
 ```bash
-chmod 777 mapper.py reducer.py 
+$ chmod 777 mapper.py reducer.py 
 ```
 
 * Locate the required jar file for streaming.
 ```bash
-find /usr/lib/ -name *hadoop*streaming*.jar
+$ find /usr/lib/ -name *hadoop*streaming*.jar
 
-
-
-
-
+/usr/lib/hadoop/hadoop-streaming-3.2.1-amzn-5.jar
+/usr/lib/hadoop/hadoop-streaming.jar
+/usr/lib/hadoop-mapreduce/hadoop-streaming-3.2.1-amzn-5.jar
+/usr/lib/hadoop-mapreduce/hadoop-streaming.jar
 ```
 
 * The one we’re looking for is /usr/lib/hadoop/hadoop-streaming.jar.
 ```bash
-hadoop jar /usr/lib/hadoop/hadoop-streaming.jar -file /home/hadoop/mapReduce/mapper.py /home/hadoop/mapReduce/reducer.py -mapper "python mapper.py" -reducer "python reducer.py"  -input /user/nipun/mapReduce/input -output /user/nipun/mapReduce/output
+$ hadoop jar /usr/lib/hadoop/hadoop-streaming.jar -file /home/hadoop/mapReduce/mapper.py 
+/home/hadoop/mapReduce/reducer.py -mapper "python mapper.py" -reducer "python reducer.py"  -input /user/nipun/mapReduce/input -output /user/nipun/mapReduce/output
 ```
 
 * The input and output directories should be located in HDFS and the relevant path should be given.The mapper, 
-reducer and streaming jars are available on master node and give the relevant paths accordingly. 
+reducer and streaming jars are available on master node and give the relevant paths accordingly.
+
+![plot](./images/response.PNG)
+
+* The result that we got is available inside the output directory and go can check how the aggregation and 
+distribution happened.
+
+## References
+1. https://www.geeksforgeeks.org/hadoop-streaming-using-python-word-count-problem
+2. https://hugues-talbot.github.io/files/BigData/Big_Data_Tutorial_1.pdf
+3. https://www.dcs.bbk.ac.uk/~dell/teaching/cc/lab/cosmin_emr_aws_v5.pdf
