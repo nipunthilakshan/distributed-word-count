@@ -88,6 +88,8 @@ reducer and streaming jars are available on master node and give the relevant pa
 
 ![plot](./images/response.PNG)
 
+![plot](./images/response1.PNG)
+
 * The result that we got is available inside the output directory and go can check how the aggregation and 
 distribution happened.
 
